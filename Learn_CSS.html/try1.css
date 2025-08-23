@@ -1,0 +1,20 @@
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: end;
+  height: 200px;
+  background: lightyellow;
+}
+
+.ball {
+  width: 50px;
+  height: 50px;
+  background: orange;
+  border-radius: 50%;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-80px) scale(1.2); }
+}

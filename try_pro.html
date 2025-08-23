@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartHire - AI Recruitment Assistant</title>
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        /* Color Variables */
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        
+        body {
+            background-color: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.5;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .logo-icon {
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 1.5rem;
+        }
+        
+        nav a {
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        nav a:hover {
+            color: var(--primary);
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--gray-700);
+        }
+        
+        /* Main Content */
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 72px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background-color: white;
+            padding: 1.5rem;
+            border-right: 1px solid var(--gray-200);
+        }
+        
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .menu-item {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--gray-700);
+            font-weight: 500;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--gray-100);
+        }
+        
+        .menu-item.active {
+            background-color: var(--primary-light);
+            color: white;
+        }
+        
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Dashboard Content */
+        .dashboard {
+            padding: 2rem;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-title {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-change {
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .stat-change.up {
+            color: var(--secondary);
+        }
+        
+        .stat-change.down {
+            color: var(--danger);
+        }
+        
+        /* Job Posting Section */
+        .job-posting {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .job-posting h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .job-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 120px;
+        }
+        
+        /* Candidates Section */
+        .candidates-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border-radius: 6px;
+            padding: 0.5rem;
+            border: 1px solid var(--gray-300);
+            width: 300px;
+        }
+        
+        .search-bar input {
+            border: none;
+            padding: 0.25rem;
+            outline: none;
+        }
+        
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-700);
+        }
+        
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background-color: var(--gray-200);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        
+        .filter-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Candidate Cards */
+        .candidates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .candidate-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.2s;
+        }
+        
+        .candidate-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .candidate-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+        
+        .candidate-title {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+        }
+        
+        .match-score {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .match-high {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        
+        .match-medium {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .match-low {
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+        
+        .skills-section {
+            margin: 1rem 0;
+        }
+        
+        .skills-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .skill-tag {
+            background-color: var(--gray-100);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .ai-warning {
+            background-color: #fee2e2;
+            border: 1px solid #fecaca;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .warning-icon {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .warning-text {
+            font-size: 0.875rem;
+            color: var(--gray-700);
+        }
+        
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .view-btn {
+            color: var(--primary);
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 0.875rem;
+        }
+        
+        .experience {
+            font-size: 0.75rem;
+            color: var(--gray-700);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .job-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .candidates-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .search-bar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="logo-icon">SH</div>
+            <span>SmartHire</span>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Candidates</a></li>
+                <li><a href="#">Jobs</a></li>
+                <li><a href="#">Analytics</a></li>
+            </ul>
+        </nav>
+        <div class="user-menu">
+            <div class="avatar">JD</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <aside class="sidebar">
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active">
+                    <span class="menu-icon">📊</span>
+                    Dashboard
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    Candidates
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">📋</span>
+                    Job Postings
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">📈</span>
+                    Analytics
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon">⚙️</span>
+                    Settings
+                </a>
+            </nav>
+        </aside>
+        
+        <main class="dashboard">
+            <div class="dashboard-header">
+                <h1>Dashboard Overview</h1>
+                <button class="btn btn-primary">Post New Job</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-title">Total Candidates</div>
+                    <div class="stat-value">142</div>
+                    <div class="stat-change up">
+                        <span>↑ 12% from last week</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Active Jobs</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-change up">
+                        <span>↑ 2 new jobs</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Avg. Match Score</div>
+                    <div class="stat-value">76%</div>
+                    <div class="stat-change down">
+                        <span>↓ 5% from last week</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">AI Detected</div>
+                    <div class="stat-value">23%</div>
+                    <div class="stat-change up">
+                        <span>↑ 8% from last week</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="job-posting">
+                <h2>Post a New Job</h2>
+                <form class="job-form">
+                    <div class="form-group">
+                        <label for="job-title">Job Title</label>
+                        <input type="text" id="job-title" placeholder="e.g. Frontend Developer">
+                    </div>
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department">
+                            <option value="">Select Department</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="design">Design</option>
+                            <option value="marketing">Marketing</option>
+                            <option value="sales">Sales</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="description">Job Description</label>
+                        <textarea id="description" placeholder="Enter detailed job description..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="skills">Required Skills</label>
+                        <input type="text" id="skills" placeholder="e.g. JavaScript, React, CSS">
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Experience Level</label>
+                        <select id="experience">
+                            <option value="">Select Experience</option>
+                            <option value="intern">Intern</option>
+                            <option value="junior">Junior (0-2 years)</option>
+                            <option value="mid">Mid (2-5 years)</option>
+                            <option value="senior">Senior (5+ years)</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <button type="submit" class="btn btn-primary">Post Job</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="candidates-section">
+                <div class="candidates-header">
+                    <h2>Recent Candidates</h2>
+                    <div class="search-bar">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" placeholder="Search candidates...">
+                    </div>
+                </div>
+                
+                <div class="filter-tabs">
+                    <div class="filter-tab active">All (42)</div>
+                    <div class="filter-tab">Shortlisted (18)</div>
+                    <div class="filter-tab">AI Flagged (6)</div>
+                    <div class="filter-tab">New (12)</div>
+                </div>
+                
+                <div class="candidates-grid">
+                    <!-- Candidate Card 1 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Rahul Sharma</div>
+                                <div class="candidate-title">Senior Frontend Developer</div>
+                            </div>
+                            <div class="match-score match-high">92%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">JavaScript</span>
+                                <span class="skill-tag">React</span>
+                                <span class="skill-tag">TypeScript</span>
+                                <span class="skill-tag">Node.js</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">5 years experience</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate Card 2 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Priya Mehta</div>
+                                <div class="candidate-title">UX Designer</div>
+                            </div>
+                            <div class="match-score match-medium">87%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Figma</span>
+                                <span class="skill-tag">UI/UX</span>
+                                <span class="skill-tag">Prototyping</span>
+                                <span class="skill-tag">User Research</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">3 years experience</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate Card 3 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Shubham Desai</div>
+                                <div class="candidate-title">Backend Engineer</div>
+                            </div>
+                            <div class="match-score match-medium">85%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">Django</span>
+                                <span class="skill-tag">AWS</span>
+                                <span class="skill-tag">PostgreSQL</span>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-warning">
+                            <span class="warning-icon">⚠️</span>
+                            <span class="warning-text">AI-generated content detected (78% probability)</span>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">4 years experience</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate Card 4 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Ananya Patel</div>
+                                <div class="candidate-title">Product Manager</div>
+                            </div>
+                            <div class="match-score match-high">89%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Product Strategy</span>
+                                <span class="skill-tag">Agile</span>
+                                <span class="skill-tag">Market Research</span>
+                                <span class="skill-tag">JIRA</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">6 years experience</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate Card 5 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Vikram Singh</div>
+                                <div class="candidate-title">DevOps Engineer</div>
+                            </div>
+                            <div class="match-score match-medium">82%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Docker</span>
+                                <span class="skill-tag">Kubernetes</span>
+                                <span class="skill-tag">CI/CD</span>
+                                <span class="skill-tag">Terraform</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">3 years experience</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Candidate Card 6 -->
+                    <div class="candidate-card">
+                        <div class="card-header">
+                            <div>
+                                <div class="candidate-name">Neha Gupta</div>
+                                <div class="candidate-title">Data Scientist</div>
+                            </div>
+                            <div class="match-score match-low">65%</div>
+                        </div>
+                        
+                        <div class="skills-section">
+                            <div class="skills-title">Top Skills:</div>
+                            <div class="skills-list">
+                                <span class="skill-tag">Python</span>
+                                <span class="skill-tag">Machine Learning</span>
+                                <span class="skill-tag">Pandas</span>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-warning">
+                            <span class="warning-icon">⚠️</span>
+                            <span class="warning-text">AI-generated content detected (92% probability)</span>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="#" class="view-btn">View Profile</a>
+                            <span class="experience">1 year experience</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

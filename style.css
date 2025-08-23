@@ -18,5 +18,28 @@ body{
     background-color: transparent;
     display: flex;
     justify-content: space-evenly;
+    align-items: center;
+    z-index: 100;
 
+}
+.logo{
+    position: relative;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    
+}
+.navbar a{
+    display: inline-block;
+    font-size: 25px;
+    font-weight: 500;
+    margin-left: 35px;
+    transform: .3s;
+    color: #610808;
+
+}
+
+.navbar a:hover{
+    color: #0ef;
 }

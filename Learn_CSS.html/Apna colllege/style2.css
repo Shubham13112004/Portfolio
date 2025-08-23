@@ -1,0 +1,23 @@
+h1{
+    text-align: center;
+}
+
+#heading{
+    height: 100px;
+}
+
+#btn{
+    width: 50vw;
+   margin: 20px auto;
+   display: block;
+}
+
+
+#texx{
+        border: 2px solid black;
+    height: 120px;
+    width: 500px;
+    text-align: center;
+    margin: auto;
+}
+

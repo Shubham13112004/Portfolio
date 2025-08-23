@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Realistic CSS Magazine — Flipbook (No JS)</title>
+  <style>
+    :root{
+      --paper:#fff;
+      --paper-edge:#e6e6e6;
+      --bg:#0f1115;
+      --accent:#c0392b;
+      --muted:#6c7076;
+      --page-width:520px;
+      --page-height:700px;
+    }
+    /* Reset */
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(180deg,#0b0c0f 0%, #141518 100%);
+      font-family: Inter, 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', Arial;
+      color:var(--muted);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:40px;
+    }
+
+    /* Stage */
+    .stage{
+      width:calc(var(--page-width) * 1.9);
+      height:var(--page-height);
+      perspective:2000px;
+      position:relative;
+    }
+
+    /* Book wrapper */
+    .book{
+      width:100%;
+      height:100%;
+      position:relative;
+      transform-style:preserve-3d;
+      margin:0 auto;
+    }
+
+    /* Spine */
+    .spine{
+      position:absolute;
+      left:50%;
+      top:0;
+      transform:translateX(-50%);
+      width:18px;
+      height:100%;
+      background:linear-gradient(90deg,#0d0d0d,#1b1b1b);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.02), 0 6px 30px rgba(0,0,0,0.6);
+      border-radius:4px;
+      z-index:50;
+    }
+
+    /* Each page is a label connected to a hidden checkbox */
+    .page{
+      position:absolute;
+      top:0;
+      width:var(--page-width);
+      height:var(--page-height);
+      transform-origin:left center;
+      left:calc(50% - var(--page-width)); /* left half */
+      background:var(--paper);
+      border-radius:4px 0 0 4px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.6), inset 0 0 0 1px var(--paper-edge);
+      overflow:hidden;
+      transform-style:preserve-3d;
+      transition:transform 0.9s cubic-bezier(.2,.9,.33,1), z-index 0s linear 0.9s;
+      z-index:40;
+    }
+
+    /* right side static back of page */
+    .page::after{
+      content:"";
+      position:absolute;
+      right:-1px;
+      top:0;
+      width:calc(var(--page-width) + 2px);
+      height:100%;
+      background:linear-gradient(90deg,rgba(0,0,0,0.02), rgba(0,0,0,0.03));
+      transform:translateZ(-1px);
+    }
+
+    /* Stack pages slightly shifted */
+    .page.p2{left:calc(50% - var(--page-width)); transform:translateX(20px);}
+    .page.p3{left:calc(50% - var(--page-width)); transform:translateX(40px);}
+    .page.p4{left:calc(50% - var(--page-width)); transform:translateX(60px);}
+    .page.p5{left:calc(50% - var(--page-width)); transform:translateX(80px);}
+
+    /* Hidden checkboxes to control flips */
+    input[type=checkbox]{display:none}
+
+    /* When a page is checked (flipped) rotate it to the left */
+    #p1:checked ~ .book .page.p1{transform: rotateY(-180deg) translateX(0); z-index:10; transition-delay:0s}
+    #p2:checked ~ .book .page.p2{transform: rotateY(-180deg) translateX(0); z-index:9; transition-delay:0.04s}
+    #p3:checked ~ .book .page.p3{transform: rotateY(-180deg) translateX(0); z-index:8; transition-delay:0.08s}
+    #p4:checked ~ .book .page.p4{transform: rotateY(-180deg) translateX(0); z-index:7; transition-delay:0.12s}
+    #p5:checked ~ .book .page.p5{transform: rotateY(-180deg) translateX(0); z-index:6; transition-delay:0.16s}
+
+    /* Make the flipped page appear above while animating */
+    .page{z-index:50}
+
+    /* Page front (visible side) */
+    .page .front,
+    .page .back{
+      position:absolute;
+      inset:0;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+    }
+    .page .back{transform:rotateY(180deg); background:linear-gradient(180deg,#fff,#fbfbfb)}
+
+    /* Content styling inside pages */
+    .cover{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:flex-start;
+      padding:48px;
+      height:100%;
+      background:linear-gradient(160deg,#0f0f12 0%, #16161a 60%), radial-gradient(circle at 10% 10%, rgba(200,30,90,0.07), transparent 20%);
+      color:#fff;
+    }
+    .cover h1{
+      font-size:40px;
+      margin:0 0 8px 0;
+      letter-spacing:1px;
+      font-weight:700;
+      color:#f7f7f7;
+      text-transform:uppercase;
+    }
+    .cover .subtitle{
+      color:var(--muted);
+      font-weight:600;
+      margin-bottom:18px;
+    }
+    .cover .hero{
+      margin-top:auto;
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    .cover .hero .badge{
+      background:linear-gradient(90deg,#ffb86b,#ff6b81);
+      color:#111;
+      padding:8px 12px;
+      border-radius:6px;
+      font-weight:700;
+    }
+
+    /* Sample article layout */
+    .article{
+      padding:44px;
+      display:flex;
+      gap:28px;
+      align-items:stretch;
+      height:100%;
+      background:linear-gradient(180deg,#fff,#fbfbfb);
+    }
+    .col-left{width:45%;}
+    .col-right{flex:1; display:flex; flex-direction:column; gap:12px}
+    .article h2{margin:0 0 12px 0; color:#111; font-size:22px}
+    .article p{margin:0; color:#333; line-height:1.6}
+    .image-placeholder{
+      width:100%; height:220px; border-radius:6px; background:linear-gradient(120deg,#d7d7d7,#f0f0f0);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.03);
+    }
+
+    /* Page controls (click areas) */
+    .page .flip-handle{
+      position:absolute;
+      right:-10px; top:0; bottom:0; width:40px; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:transparent;
+    }
+    .page .flip-corner{
+      position:absolute; right:0; top:0; width:64px; height:64px; background:linear-gradient(180deg, rgba(0,0,0,0.03), transparent); border-radius:0 6px 0 0;
+    }
+
+    /* Back cover styling */
+    .back-cover{
+      display:flex; flex-direction:column; justify-content:center; align-items:flex-end; padding:48px; color:var(--muted);
+    }
+
+    /* Small realistic page edges on left stack */\    
+    .edge-left{
+      position:absolute; left:calc(50% - var(--page-width) - 6px); top:6px; bottom:6px; width:6px; background:linear-gradient(180deg,#ddd,#eee); border-radius:2px 0 0 2px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+    }
+
+    /* Footer instructions */
+    .instructions{
+      position:fixed; bottom:24px; left:50%; transform:translateX(-50%); color:#bfc3c8; font-size:13px; background:rgba(255,255,255,0.02); padding:10px 14px; border-radius:8px; border:1px solid rgba(255,255,255,0.02);
+    }
+
+    /* Responsive */
+    @media (max-width:900px){
+      :root{--page-width:360px; --page-height:540px}
+      .stage{width:calc(var(--page-width) * 1.9)}
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Hidden checkboxes controlling page flips -->
+  <input type="checkbox" id="p1">
+  <input type="checkbox" id="p2">
+  <input type="checkbox" id="p3">
+  <input type="checkbox" id="p4">
+  <input type="checkbox" id="p5">
+
+  <div class="stage">
+    <div class="book">
+
+      <div class="spine"></div>
+      <div class="edge-left" aria-hidden="true"></div>
+
+      <!-- Page 1: front cover -->
+      <label class="page p1" for="p1" aria-hidden="true">
+        <div class="front cover">
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="brand" style="display:flex;align-items:center;gap:12px">
+              <div style="width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#ff6b6b,#ffb86b); box-shadow:0 6px 20px rgba(255,107,107,0.12)"></div>
+              <div style="display:flex;flex-direction:column">
+                <div style="font-weight:700; color:#fff; font-size:14px; letter-spacing:1px;">Aperture</div>
+                <div style="font-size:12px; color:var(--muted)">Design Quarterly</div>
+              </div>
+            </div>
+
+            <h1 style="font-size:46px; margin-top:28px">Modern <br>Silhouettes</h1>
+            <div class="subtitle">Issue 08 • Autumn 2025</div>
+
+            <div class="hero">
+              <div class="badge">FEATURE</div>
+              <div style="color:var(--muted); font-weight:600">Urban Texture & Minimal Portraits</div>
+            </div>
+          </div>
+        </div>
+        <div class="back back-cover">
+          <div style="font-size:14px; color:var(--muted)">Editor: Shubham Desai</div>
+          <div style="font-size:12px; margin-top:16px; color:#888">A small realistic mock magazine built with only HTML & CSS. No JavaScript.</div>
+          <div style="margin-top:auto; font-size:12px;color:#999">www.example.com</div>
+        </div>
+      </label>
+
+      <!-- Page 2: article left -->
+      <label class="page p2" for="p2" aria-hidden="true">
+        <div class="front article">
+          <div class="col-left">
+            <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Feature</div>
+            <h2>Minimal Portraits: The Power of Negative Space</h2>
+            <p style="margin-top:12px; color:#444">Photographers and designers are rediscovering breath in composition — clean backgrounds, simple palettes, and soft grain that celebrate subject and void equally. This movement is quiet, intentional, and surprisingly modern.</p>
+          </div>
+          <div class="col-right">
+            <div class="image-placeholder"></div>
+            <p style="color:#666">Photo: Studio Aperture</p>
+            <p style="margin-top:12px; color:#444">The interview explores the relationship between texture and form, and the way lighting sculpts mood without excess.</p>
+          </div>
+        </div>
+        <div class="back" style="display:flex; align-items:center; justify-content:center; padding:28px;">
+          <div style="color:var(--muted); font-size:14px">— Continued —</div>
+        </div>
+      </label>
+
+      <!-- Page 3: article right -->
+      <label class="page p3" for="p3" aria-hidden="true">
+        <div class="front article">
+          <div class="col-left">
+            <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Profile</div>
+            <h2>Studio Walkthrough: Low-Fi Lighting</h2>
+            <p style="color:#444">We visit a small studio where a soft box and a handful of reflectors create a world of portrait possibilities. The photographer explains the magic of working with a single light source.</p>
+          </div>
+          <div class="col-right">
+            <div class="image-placeholder"></div>
+            <p style="color:#666">Photo series: Low-Fi</p>
+            <p style="margin-top:12px; color:#444">An accompanying guide shows simple setups you can recreate at home.</p>
+          </div>
+        </div>
+        <div class="back" style="display:flex; align-items:center; justify-content:center; padding:28px;">
+          <div style="color:var(--muted); font-size:14px">— Advert —</div>
+        </div>
+      </label>
+
+      <!-- Page 4: middle spread left -->
+      <label class="page p4" for="p4" aria-hidden="true">
+        <div class="front article">
+          <div class="col-left">
+            <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Portfolio</div>
+            <h2>Urban Textures</h2>
+            <p style="color:#444">Concrete, rust, and peeling paint become composition tools. We assembled a short collection of textures and tips for capturing details with intention.</p>
+          </div>
+          <div class="col-right">
+            <div class="image-placeholder"></div>
+            <p style="color:#666">Textures by: Local Walks</p>
+          </div>
+        </div>
+        <div class="back" style="display:flex; align-items:center; justify-content:center; padding:28px;">
+          <div style="color:var(--muted); font-size:14px">— More —</div>
+        </div>
+      </label>
+
+      <!-- Page 5: middle spread right -->
+      <label class="page p5" for="p5" aria-hidden="true">
+        <div class="front article">
+          <div class="col-left">
+            <div style="font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:1px;">Essay</div>
+            <h2>Quiet Compositions</h2>
+            <p style="color:#444">A short essay on minimalism in editorial practice — why less often feels like more when executed with craft.</p>
+          </div>
+          <div class="col-right">
+            <div class="image-placeholder"></div>
+            <p style="color:#666">Illustration: Quiet Lines</p>
+          </div>
+        </div>
+        <div class="back" style="display:flex; align-items:center; justify-content:center; padding:28px;">
+          <div style="color:var(--muted); font-size:14px">— End —</div>
+        </div>
+      </label>
+
+      <!-- Back cover (static) -->
+      <div class="page" style="left:calc(50%); border-radius:0 4px 4px 0; box-shadow: -8px 18px 40px rgba(0,0,0,0.6); width:var(--page-width);">
+        <div class="front back-cover" style="background:linear-gradient(180deg,#f6f6f6,#efefef);">
+          <div style="text-align:left; width:100%">
+            <h3 style="margin:0;color:#111">About Aperture</h3>
+            <p style="color:#444; margin-top:8px">Aperture is a mock editorial focused on photography, texture, and crafted design. This mockup demonstrates a realistic magazine layout using only HTML and CSS.</p>
+
+            <div style="margin-top:18px; color:var(--muted); font-size:13px">ISSN 0000-0000</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="instructions">Click the right edge of each page to flip. Click again to close. Open in VS Code to edit text, images, and page order.</div>
+
+</body>
+</html>
