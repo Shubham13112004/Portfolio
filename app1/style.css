@@ -123,22 +123,77 @@ color: #6e6e6e;
     
 }
 .flex_card{
-    background-color: rgb(213, 201, 201);
+    background-color: rgb(211, 173, 173);
     padding: 30px;
-    width: 30%;
+    width: 50%;
     height: 400px;
     
 }
 
-.sample{
-    
-   
-    padding: 30px 0;
-    background-color: red;
-    width: 270px;
-    height: 300px;
+.abc{
+    display: flex;
+    justify-content: space-between;
+    padding: 100px;
+    gap: 60px;
+    background-color: rgb(244, 246, 244);
+}
 
-    margin-left: 270px;
+.abc_left{
+    background-color: rgb(166, 78, 78);
+    width: 50%;
+}
 
+.abc_placeholder{
+    background-color: rgb(223, 216, 216);
+    width: 50%;
+}
+
+
+
+.abc_right{
+    width: 50%;
+
+}
+
+.abc_btn{
+    height: 20px;
+    width: 43 0px;
+    background-color: green;
+    display: flex;
+    justify-content: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    border: 2px solid black;
     
+}
+.abc_right{
+    display: flex;
+    flex-direction: column;
+    gap: 20px ;
+}
+
+.abc_description{
+    
+}
+
+.abc_li{
+    border-bottom: 1px solid rgb(91, 78, 78);
+    padding: 7px 0px;
+    list-style-type: none;
+
+}
+
+.abc_li:before{
+    content: "->";
+    margin-right: 10px;
+    color: #111110;
+
+}
+.abc_form{
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+
 }
